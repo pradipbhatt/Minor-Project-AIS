@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles */
+body {
+    @apply bg-gray-100 text-gray-800 font-sans;
+}
+
+header {
+    @apply bg-blue-600 text-white p-4 shadow-md;
+}
+
+button {
+    @apply bg-blue-500 text-white font-medium py-2 px-4 rounded hover:bg-blue-600;
+}
+
+input {
+    @apply border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500;
+}
+
+.container {
+    @apply mx-auto px-4;
+}
