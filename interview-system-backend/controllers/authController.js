@@ -54,34 +54,44 @@ const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
+    // Find the user by email
     const user = await User.findOne({ email });
 
     if (!user) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
+    // Compare the provided password with the stored hash
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
+    // Generate token
     const token = generateToken(user._id, 'user');
 
-    // Set token in cookies (HTTP-only and secure)
+    // Log the generated token on the server side for debugging purposes
+    console.log("Generated Token:", token);
+
+    // Set the token in cookies (HTTP-only and secure)
     res.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', // Set secure flag in production
+      secure: process.env.NODE_ENV === 'production', // Secure flag for production
       maxAge: 3600000, // 1 hour
     });
 
+    // Send response with success message and token
     res.status(200).json({
       message: 'Login successful',
+      token,  // Send the token as part of the response (if needed on the client side)
     });
   } catch (error) {
+    console.error("Error during login:", error);
     res.status(500).json({ message: error.message });
   }
 };
+
 
 // Register a new company
 const registerCompany = async (req, res) => {
