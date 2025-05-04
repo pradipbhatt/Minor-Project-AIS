@@ -49,7 +49,6 @@ const getInterviewByJob = async (req, res) => {
   }
 };
 
-
 // Submit an answer to a question
 const submitAnswer = async (req, res) => {
   const { question_id, answer_text } = req.body;
@@ -68,14 +67,36 @@ const submitAnswer = async (req, res) => {
   }
 };
 
+// Get questions by schedule ID
+const getQuestionsByScheduleId = async (req, res) => {
+  try {
+    const questions = await Question.find({ schedule_id: req.params.scheduleId });
+
+    if (!questions || questions.length === 0) {
+      return res.status(404).json({ message: 'No questions found for this schedule' });
+    }
+
+    res.status(200).json(questions);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+
 // Get results for a specific job's interview
 const getInterviewResults = async (req, res) => {
   try {
+    // Find answers related to the job_id
     const answers = await Answer.find({ job_id: req.params.jobId }).populate('question_id');
+
+    if (!answers || answers.length === 0) {
+      return res.status(404).json({ message: 'No answers found for this job interview' });
+    }
+
     res.status(200).json(answers);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
 
-module.exports = { scheduleInterview, getInterviewByJob, submitAnswer, getInterviewResults };
+module.exports = { scheduleInterview, getInterviewByJob, submitAnswer, getInterviewResults, getQuestionsByScheduleId };

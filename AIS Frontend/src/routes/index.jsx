@@ -1,22 +1,27 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Home from "../pages/Home";
 import Login from "../pages/Login";
-import Register from "../pages/Register"; // Import Register page
-import Dashboard from "../pages/UserDashboard";
-import UserDashboard from "../pages/UserDashboard"; // User Dashboard page
-import AdminDashboard from "../pages/AdminDashboard"; // Admin Dashboard page
+import Register from "../pages/Register";
+import UserDashboard from "../pages/UserDashboard";
+import AdminDashboard from "../pages/AdminDashboard";
+import CreateJobForm from "../components/CreateJobForm";
+import ScheduleInterviewForm from "../pages/ScheduleInterviewForm";
+import InterviewQuestions from "../pages/InterviewQuestions.jsx";  // Import InterviewQuestions component
 
 const AppRoutes = () => (
-  <BrowserRouter>
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} /> {/* Added Register route */}
-      <Route path="/dashboard" element={<Dashboard />} /> {/* Base dashboard route */}
-      <Route path="/user-dashboard" element={<UserDashboard />} /> {/* User Dashboard */}
-      <Route path="/admin-dashboard" element={<AdminDashboard />} /> {/* Admin Dashboard */}
-    </Routes>
-  </BrowserRouter>
+  <Routes>
+    <Route path="/" element={<Home />} />
+    <Route path="/login" element={<Login />} />
+    <Route path="/register" element={<Register />} />
+    <Route path="/user-dashboard" element={<UserDashboard />} />
+    <Route path="/company-dashboard" element={<AdminDashboard />} />
+    <Route path="/create-job" element={<CreateJobForm />} />
+    {/* Schedule interview */}
+    <Route path="/schedule_interview" element={<ScheduleInterviewForm />} />
+    {/* Interview Questions page for a specific job */}
+    <Route path="/interview-questions/:jobId" element={<InterviewQuestions />} />
+    {/* Add more routes as needed */}
+  </Routes>
 );
 
 export default AppRoutes;

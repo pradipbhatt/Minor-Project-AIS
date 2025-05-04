@@ -1,44 +1,44 @@
-// src/pages/Register.jsx
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { registerUser } from "../api"; // Import the registerUser function
-import Cookies from "js-cookie"; // Import js-cookie
+import { registerUser, registerCompany } from "../api"; // Import both register functions
+import Cookies from "js-cookie";
 
 const Register = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
+    role: "user", // default value
   });
-  const [error, setError] = useState(""); // To handle registration errors
-  const navigate = useNavigate(); // For redirecting after successful registration
+
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Call the registerUser function from api.js
-      console.log("Sending registration data:", formData); // Log request data
-      const response = await registerUser(formData);
+      console.log("Sending registration data:", formData);
 
-      // Log the response from the API call
-      console.log("API Response:", response);
+      let response;
+      if (formData.role === "company") {
+        response = await registerCompany(formData);
+      } else {
+        response = await registerUser(formData);
+      }
 
-      // Store the received token in cookies (if available in the response)
-      if (response && response.token) {
+      if (response?.token) {
         Cookies.set("token", response.token, { expires: 7, path: "" });
         console.log("Token stored in cookies:", response.token);
       }
 
-      // On successful registration, navigate to the login page
       navigate("/login");
     } catch (err) {
-      // Handle any error (network or API issues)
-      console.error("Error during registration:", err); // Log error
+      console.error("Error during registration:", err);
       setError(err.message || "Registration failed");
     }
   };
@@ -51,7 +51,7 @@ const Register = () => {
       >
         <h2 className="text-2xl font-bold mb-6 text-center">Register</h2>
 
-        {error && <p className="text-red-500 text-center mb-4">{error}</p>} {/* Error message */}
+        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
         <input
           type="text"
@@ -82,6 +82,17 @@ const Register = () => {
           required
           className="w-full p-3 mb-6 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
+
+        {/* Role selection */}
+        <select
+          name="role"
+          value={formData.role}
+          onChange={handleChange}
+          className="w-full p-3 mb-6 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="user">Register as User</option>
+          <option value="company">Register as Company</option>
+        </select>
 
         <button
           type="submit"

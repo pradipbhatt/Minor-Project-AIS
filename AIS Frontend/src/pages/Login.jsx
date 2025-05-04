@@ -1,47 +1,52 @@
-// src/pages/Login.jsx
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginUser } from "../api"; // Import the loginUser function
-import Cookies from "js-cookie"; // Import js-cookie
+import { loginUser, loginCompany } from "../api"; // Import both login functions
+import Cookies from "js-cookie";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("user"); // New role state
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Log the login data before making the API call
-      console.log("Login attempt with data:", { email, password });
-
-      // Call the loginUser function from api.js
-      const response = await loginUser({ email, password });
-
-      // Log the response from the API
-      console.log("API Response:", response);
-
-      // Check if the token is available in the response
-      if (response && response.token) {
+      console.log("Login attempt with data:", { email, password, role });
+  
+      let response;
+      if (role === "company") {
+        response = await loginCompany({ email, password });
+      } else {
+        response = await loginUser({ email, password });
+      }
+  
+      if (response?.token) {
+        // Log token received for debugging
+        console.log("Received token:", response.token);
+  
         // Store token in cookies
-        Cookies.set("token", response.token, { expires: 7, path: "" });
+        Cookies.set("token", response.token, { expires: 7, path: "/" });
         console.log("Token stored in cookies:", response.token);
-
-        // Wait for a moment before navigating (to ensure the cookie is set first)
+  
+        // Redirect based on role
         setTimeout(() => {
-          navigate("/dashboard");
-        }, 100); // Adjust the timeout if needed (100ms delay)
+          if (role === "company") {
+            navigate("/company-dashboard");
+          } else {
+            navigate("/user-dashboard");
+          }
+        }, 100);
       } else {
         setError("Login failed: Token is missing or invalid.");
       }
     } catch (err) {
-      // Log any errors
       console.error("Error during login:", err);
       setError(err.message || "An error occurred");
     }
   };
+  
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
@@ -64,6 +69,17 @@ const Login = () => {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
+
+        {/* Role selector */}
+        <select
+          className="w-full p-2 border border-gray-300 rounded"
+          value={role}
+          onChange={(e) => setRole(e.target.value)}
+        >
+          <option value="user">Login as User</option>
+          <option value="company">Login as Company</option>
+        </select>
+
         <button
           type="submit"
           className="bg-blue-500 text-white py-2 px-4 rounded w-full hover:bg-blue-700"

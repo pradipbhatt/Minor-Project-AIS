@@ -1,26 +1,50 @@
 // controllers/jobController.js
-const Job = require('../models/Job');
+const Job = require('../models/Job');  // Using require for importing Job model
+const jwt = require('jsonwebtoken');   // Using require for importing jsonwebtoken
 
 // Create a new job
 const createJob = async (req, res) => {
-  const { title, description, location, salary } = req.body;
-
   try {
+    // Get token from cookies
+    const token = req.cookies.token;
+    if (!token) {
+      return res.status(401).json({ message: 'No token provided, authorization denied.' });
+    }
+
+    // Verify the token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (!decoded) {
+      return res.status(401).json({ message: 'Token is not valid.' });
+    }
+
+    // Now you have access to the company ID from the decoded token
+    const companyId = decoded.id;  // Assuming `id` is stored in the JWT payload for the company
+
+    // Destructure job data from the request body
+    const { title, description, location, salary } = req.body;
+
+    // Create the new job with the company info from the decoded token
     const newJob = new Job({
       title,
       description,
       location,
       salary,
-      company: req.company._id,    // from isCompany middleware
-      createdBy: req.company._id,
+      company: companyId,  // Use companyId from the token
+      createdBy: companyId,  // You can also associate the job with the creator if needed
     });
 
+    // Save the new job
     await newJob.save();
-    res.status(201).json({ message: "Job created successfully", job: newJob });
+
+    // Send a response with the job details
+    res.status(201).json({ message: 'Job created successfully', job: newJob });
+
   } catch (error) {
-    res.status(500).json({ message: "Failed to create job", error: error.message });
+    console.error(error);
+    res.status(500).json({ message: 'Failed to create job', error: error.message });
   }
 };
+
 
 // Get all jobs
 const getJobs = async (req, res) => {

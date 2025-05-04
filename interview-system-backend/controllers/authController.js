@@ -39,6 +39,7 @@ const registerUser = async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production', // Set secure flag in production
       maxAge: 3600000, // 1 hour
+      path: '/', // Cookie is valid for all routes
     });
 
     res.status(201).json({
@@ -79,9 +80,9 @@ const loginUser = async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production', // Secure flag for production
       maxAge: 3600000, // 1 hour
+      path: '/', // Cookie is valid for all routes
     });
 
-    // Send response with success message and token
     res.status(200).json({
       message: 'Login successful',
       token,  // Send the token as part of the response (if needed on the client side)
@@ -91,7 +92,6 @@ const loginUser = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 // Register a new company
 const registerCompany = async (req, res) => {
@@ -120,8 +120,9 @@ const registerCompany = async (req, res) => {
     // Set token in cookies (HTTP-only and secure)
     res.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', // Set secure flag in production
+      secure: process.env.NODE_ENV === 'production', // Secure flag for production
       maxAge: 3600000, // 1 hour
+      path: '/', // Cookie is valid for all routes
     });
 
     res.status(201).json({
@@ -137,34 +138,45 @@ const loginCompany = async (req, res) => {
   const { email, password } = req.body;
 
   try {
+    // Find the company by email
     const company = await Company.findOne({ email });
 
     if (!company) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
+    // Compare the provided password with the stored hash
     const isMatch = await bcrypt.compare(password, company.password);
 
     if (!isMatch) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    const token = generateToken(company._id, 'company');
-
-    // Set token in cookies (HTTP-only and secure)
-    res.cookie('token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', // Set secure flag in production
-      maxAge: 3600000, // 1 hour
+    // Generate a JWT token
+    const token = jwt.sign({ id: company._id, role: 'company' }, process.env.JWT_SECRET, {
+      expiresIn: '7d', // Set token expiration time as needed
     });
 
+    // Set token in cookies
+    res.cookie('token', token, {
+      httpOnly: true, // Ensures the cookie can't be accessed by JavaScript
+      secure: process.env.NODE_ENV === 'production', // Use secure cookies only in production
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      path: '/', // Cookie is valid for all routes
+    });
+
+    // Send the token along with the success message
     res.status(200).json({
       message: 'Login successful',
+      token: token,  // Include the token in the response body
     });
+
   } catch (error) {
+    console.error("Error during login:", error);
     res.status(500).json({ message: error.message });
   }
 };
+
 
 // Middleware to check if the user is authenticated
 const protect = (req, res, next) => {

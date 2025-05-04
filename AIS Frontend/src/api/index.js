@@ -1,95 +1,165 @@
-// src/api.js
-
 import Cookies from "js-cookie";  // Import js-cookie
 
 const API_URL = "http://localhost:5000/api";
 
-// Helper function to handle HTTP requests
+// Helper function for handling fetch requests and errors
 const fetchData = async (url, options = {}) => {
   const response = await fetch(url, options);
+  
   if (!response.ok) {
     const data = await response.json();
+    console.error("Error response:", data);  // Log error response
     throw new Error(data.message || "An error occurred");
   }
-  return response.json();
+
+  const data = await response.json();
+  console.log(`Response from ${url}:`, data);  // Log successful response
+  return data;
 };
 
-// API functions
-
-// Register new user
+// Register APIs
 export const registerUser = async (userData) => {
-  const response = await fetchData(`${API_URL}/auth/register/user`, {
+  return await fetchData(`${API_URL}/auth/register/user`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(userData),
   });
-  return response;
 };
 
-// Login user and store token in cookies
+export const registerCompany = async (companyData) => {
+  return await fetchData(`${API_URL}/auth/register/company`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(companyData),
+  });
+};
+
+// Login APIs
 export const loginUser = async (credentials) => {
   const response = await fetchData(`${API_URL}/auth/login/user`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(credentials),
   });
 
-  // Store token in a cookie on successful login
-  Cookies.set("token", response.token, { expires: 7, path: "" });
+  Cookies.set("token", response.token, { expires: 7, path: "/" });
 
   return response;
 };
 
-// Get all interviews using the token stored in cookies
-export const getInterviews = async () => {
-  const token = Cookies.get("token");
+export const loginCompany = async (credentials) => {
+  const response = await fetchData(`${API_URL}/auth/login/company`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(credentials),
+  });
+
+  if (response.token) {
+    Cookies.set("token", response.token, { expires: 7, path: "/" });
+    console.log("Token stored in cookies:", response.token); // Log token for debugging
+    
+  }
+
+  return response;
+};
+
+
+// Example of creating and exporting the createJob function in /src/api/index.js
+
+export const createJob = async (jobData) => {
+  const token = Cookies.get("token");  // Get token from cookies
+  console.log("Token from cookies:", token);  // Log token for debugging
+
   if (!token) {
+    console.error("No authentication token found");
     throw new Error("No authentication token found");
   }
 
-  const response = await fetchData(`${API_URL}/interviews`, {
+  try {
+    const response = await fetch(`${API_URL}/jobs`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,  // Pass the token in the Authorization header
+      },
+      body: JSON.stringify(jobData),
+    });
+
+    if (!response.ok) {
+      const data = await response.json();
+      console.error("Failed to create job:", data); // Log failure data
+      throw new Error(data.message || "Failed to create job");
+    }
+
+    const data = await response.json();
+    console.log("Job created successfully:", data);  // Log successful job creation
+    return data;
+
+  } catch (error) {
+    console.error("Error occurred while creating job:", error);
+    throw new Error(error.message || "Something went wrong while creating the job.");
+  }
+};
+
+
+
+// Get all jobs using the token stored in cookies
+export const getAllJobs = async () => {
+  const token = Cookies.get("token");
+  if (!token) {
+    console.error("No authentication token found");
+    throw new Error("No authentication token found");
+  }
+
+  const response = await fetchData(`${API_URL}/jobs`, {
     method: "GET",
     headers: {
-      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`, // Authorization header with token
     },
+    credentials: 'include',
   });
+
   return response;
 };
 
-// Create a new interview using token from cookies
-export const createInterview = async (interviewData) => {
+// Submit answers for an interview
+export const submitAnswers = async (answersData) => {
   const token = Cookies.get("token");
   if (!token) {
+    console.error("No authentication token found");
     throw new Error("No authentication token found");
   }
 
-  const response = await fetchData(`${API_URL}/interviews`, {
+  const response = await fetchData(`${API_URL}/interviews/answer`, {
     method: "POST",
     headers: {
-      "Authorization": `Bearer ${token}`,
       "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
     },
-    body: JSON.stringify(interviewData),
+    credentials: 'include',
+    body: JSON.stringify(answersData),
   });
+
   return response;
 };
 
-// Get details of a specific interview
-export const getInterviewDetails = async (id) => {
+export const getInterviewQuestions = async (jobId) => {
   const token = Cookies.get("token");
-  if (!token) {
-    throw new Error("No authentication token found");
-  }
-
-  const response = await fetchData(`${API_URL}/interviews/${id}`, {
+  const res = await fetch(`${API_URL}/interviews/questions/${jobId}`, {
     method: "GET",
     headers: {
+      "Content-Type": "application/json",
       "Authorization": `Bearer ${token}`,
     },
+    credentials: 'include',
   });
-  return response;
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch interview questions");
+  }
+
+  return await res.json();
 };
+
+export { API_URL };

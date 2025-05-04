@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import JobsList from "../components/JobsList";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -28,9 +29,9 @@ const Dashboard = () => {
   }, [navigate]);
 
   return (
-    <div>
-      <h1>Loading...</h1>
-    </div>
+   <>
+   <JobsList/>
+   </>
   );
 };
 
