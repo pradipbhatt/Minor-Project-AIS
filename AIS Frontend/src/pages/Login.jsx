@@ -31,11 +31,7 @@ const Login = () => {
         console.log("Token stored in cookies:", response.token);
 
         setTimeout(() => {
-          if (role === "company") {
-            navigate("/company-dashboard");
-          } else {
-            navigate("/user-dashboard");
-          }
+          navigate(role === "company" ? "/company-dashboard" : "/user-dashboard");
         }, 100);
       } else {
         setError("Login failed: Token is missing or invalid.");
@@ -47,17 +43,17 @@ const Login = () => {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gradient-to-b white">
-      <div className="bg-white p-8 rounded-2xl shadow-2xl  border-purple-400 transition-transform transform hover:scale-105 duration-300 w-full max-w-md">
-        <h1 className="text-4xl font-extrabold mb-6 text-center text-blue-700 animate-pulse">
+    <div className="flex items-center justify-center h-screen bg-background">
+      <div className="bg-surface p-8 rounded-2xl shadow-2xl border border-border transition-transform transform hover:scale-105 duration-300 w-full max-w-md">
+        <h1 className="text-4xl font-extrabold mb-6 text-center text-primary animate-pulse">
           Login
         </h1>
-        {error && <p className="text-red-600 mb-4 text-center">{error}</p>}
-        <form onSubmit={handleSubmit} className="space-y-4 bg-blue-100 p-4 rounded-lg">
+        {error && <p className="text-error mb-4 text-center">{error}</p>}
+        <form onSubmit={handleSubmit} className="space-y-4 bg-background p-4 rounded-lg">
           <input
             type="email"
             placeholder="Email"
-            className="w-full p-3 border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+            className="w-full p-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary text-text placeholder-muted"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -67,13 +63,13 @@ const Login = () => {
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Password"
-              className="w-full p-3 border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+              className="w-full p-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary text-text placeholder-muted"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
             <span
-              className="absolute right-3 top-3 text-sm text-purple-700 cursor-pointer"
+              className="absolute right-3 top-3 text-sm text-secondary cursor-pointer"
               onClick={() => setShowPassword(!showPassword)}
             >
               {showPassword ? "Hide" : "Show"}
@@ -84,13 +80,13 @@ const Login = () => {
             <input
               type={showConfirmPassword ? "text" : "password"}
               placeholder="Confirm Password"
-              className="w-full p-3 border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+              className="w-full p-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary text-text placeholder-muted"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
             />
             <span
-              className="absolute right-3 top-3 text-sm text-purple-700 cursor-pointer"
+              className="absolute right-3 top-3 text-sm text-secondary cursor-pointer"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
             >
               {showConfirmPassword ? "Hide" : "Show"}
@@ -98,16 +94,17 @@ const Login = () => {
           </div>
 
           <select
-            className="w-full p-3 border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+            className="w-full p-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary text-text"
             value={role}
             onChange={(e) => setRole(e.target.value)}
           >
             <option value="user">Login as User</option>
             <option value="company">Login as Company</option>
           </select>
+
           <button
             type="submit"
-            className="bg-blue-600 text-white py-2 px-4 rounded-lg w-full hover:bg-purple-800 transition-all font-semibold"
+            className="bg-primary text-surface py-2 px-4 rounded-lg w-full hover:bg-secondary transition-all font-semibold"
           >
             Login
           </button>

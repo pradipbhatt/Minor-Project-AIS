@@ -24,16 +24,16 @@ const Navbar = () => {
   };
 
   const isActive = (path) =>
-    location.pathname === path ? "underline text-blue-600" : "";
+    location.pathname === path ? "underline text-text" : "";
 
   return (
-    <nav className="bg-primary shadow-md px-6 py-4 flex justify-between items-center">
-      <div className="text-xl font-bold text-blue-600">InterviewSystem</div>
+    <nav className="bg-surface shadow-md px-6 py-4 flex justify-between items-center">
+      <div className="text-xl font-bold text-surface">InterviewSystem</div>
 
       <div className="flex space-x-4">
         <Link
           to="/"
-          className={`text-gray-700 hover:text-blue-600 font-medium ${isActive("/")}`}
+          className={`text-muted hover:text-primary-light font-medium ${isActive("/")}`}
         >
           Home
         </Link>
@@ -42,13 +42,13 @@ const Navbar = () => {
           <>
             <Link
               to="/login"
-              className={`text-gray-700 hover:text-blue-600 font-medium ${isActive("/login")}`}
+              className={`text-muted hover:text-primary-light font-medium ${isActive("/login")}`}
             >
               Login
             </Link>
             <Link
               to="/register"
-              className={`text-gray-700 hover:text-blue-600 font-medium ${isActive("/register")}`}
+              className={`text-muted hover:text-primary-light font-medium ${isActive("/register")}`}
             >
               Register
             </Link>
@@ -58,7 +58,7 @@ const Navbar = () => {
         {token && role === "user" && (
           <Link
             to="/user-dashboard"
-            className={`text-gray-700 hover:text-blue-600 font-medium ${isActive("/user-dashboard")}`}
+            className={`text-muted hover:text-primary-light font-medium ${isActive("/user-dashboard")}`}
           >
             User Dashboard
           </Link>
@@ -67,7 +67,7 @@ const Navbar = () => {
         {token && role === "admin" && (
           <Link
             to="/admin-dashboard"
-            className={`text-gray-700 hover:text-blue-600 font-medium ${isActive("/admin-dashboard")}`}
+            className={`text-muted hover:text-primary-light font-medium ${isActive("/admin-dashboard")}`}
           >
             Admin Dashboard
           </Link>
@@ -76,7 +76,7 @@ const Navbar = () => {
         {token && (
           <button
             onClick={handleLogout}
-            className="text-red-500 font-medium hover:text-red-700"
+            className="text-error font-medium hover:text-error-dark"
           >
             Logout
           </button>

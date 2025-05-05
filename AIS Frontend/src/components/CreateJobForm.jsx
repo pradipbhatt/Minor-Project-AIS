@@ -85,35 +85,35 @@ const CreateJobForm = () => {
   
 
   return (
-    <div className="max-w-lg mx-auto p-6 bg-white shadow-lg rounded-lg">
-      <h2 className="text-2xl font-bold mb-6">Create Job</h2>
+    <div className="max-w-lg mx-auto p-6 bg-background shadow-lg rounded-lg">
+      <h2 className="text-2xl font-bold mb-6 text-primary">Create Job</h2>
 
-      {error && <p className="text-red-500 mb-4">{error}</p>}
+      {error && <p className="text-error mb-4">{error}</p>}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Title */}
         <div>
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700">Job Title</label>
+          <label htmlFor="title" className="block text-sm font-medium text-muted">Job Title</label>
           <input
             type="text"
             id="title"
             name="title"
             value={jobData.title}
             onChange={handleChange}
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+            className="mt-1 block w-full p-2 border border-border rounded-md"
             required
           />
         </div>
 
         {/* Description */}
         <div>
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700">Job Description</label>
+          <label htmlFor="description" className="block text-sm font-medium text-muted">Job Description</label>
           <textarea
             id="description"
             name="description"
             value={jobData.description}
             onChange={handleChange}
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+            className="mt-1 block w-full p-2 border border-border rounded-md"
             rows="4"
             required
           />
@@ -121,28 +121,28 @@ const CreateJobForm = () => {
 
         {/* Location */}
         <div>
-          <label htmlFor="location" className="block text-sm font-medium text-gray-700">Job Location</label>
+          <label htmlFor="location" className="block text-sm font-medium text-muted">Job Location</label>
           <input
             type="text"
             id="location"
             name="location"
             value={jobData.location}
             onChange={handleChange}
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+            className="mt-1 block w-full p-2 border border-border rounded-md"
             required
           />
         </div>
 
         {/* Salary */}
         <div>
-          <label htmlFor="salary" className="block text-sm font-medium text-gray-700">Salary (NPR)</label>
+          <label htmlFor="salary" className="block text-sm font-medium text-muted">Salary (NPR)</label>
           <input
             type="number"
             id="salary"
             name="salary"
             value={jobData.salary}
             onChange={handleChange}
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+            className="mt-1 block w-full p-2 border border-border rounded-md"
             required
           />
         </div>
@@ -151,7 +151,7 @@ const CreateJobForm = () => {
         <div>
           <button
             type="submit"
-            className={`w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`w-full py-2 px-4 bg-primary text-background rounded-md hover:bg-hover transition duration-300 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             disabled={loading}
           >
             {loading ? 'Creating Job...' : 'Create Job'}

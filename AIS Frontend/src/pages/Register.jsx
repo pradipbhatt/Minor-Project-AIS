@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { registerUser, registerCompany } from "../api";
 import Cookies from "js-cookie";
-import { Eye, EyeOff } from "lucide-react"; // icon (optional)
+import { Eye, EyeOff } from "lucide-react";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -52,14 +52,14 @@ const Register = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100 transition-all duration-300 ease-in-out">
+    <div className="flex justify-center items-center min-h-screen bg-background transition-all duration-300 ease-in-out">
       <form
         onSubmit={handleSubmit}
-        className="bg-white shadow-xl p-8 rounded-2xl w-full max-w-md hover:shadow-2xl transition duration-300 ease-in-out"
+        className="bg-surface shadow-xl p-8 rounded-2xl w-full max-w-md hover:shadow-2xl transition duration-300 ease-in-out border border-border"
       >
-        <h2 className="text-2xl font-bold mb-6 text-center">Register</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center text-primary">Register</h2>
 
-        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+        {error && <p className="text-error text-center mb-4">{error}</p>}
 
         <input
           type="text"
@@ -68,7 +68,7 @@ const Register = () => {
           value={formData.name}
           onChange={handleChange}
           required
-          className="w-full p-3 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+          className="w-full p-3 mb-4 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary text-text placeholder-muted"
         />
 
         <input
@@ -78,10 +78,9 @@ const Register = () => {
           value={formData.email}
           onChange={handleChange}
           required
-          className="w-full p-3 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+          className="w-full p-3 mb-4 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary text-text placeholder-muted"
         />
 
-        {/* Password Field with toggle */}
         <div className="relative mb-4">
           <input
             type={showPassword ? "text" : "password"}
@@ -90,17 +89,16 @@ const Register = () => {
             value={formData.password}
             onChange={handleChange}
             required
-            className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+            className="w-full p-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary text-text placeholder-muted"
           />
           <span
             onClick={() => setShowPassword((prev) => !prev)}
-            className="absolute right-3 top-3 cursor-pointer text-gray-500 hover:text-blue-600 transition"
+            className="absolute right-3 top-3 cursor-pointer text-muted hover:text-primary transition"
           >
             {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
           </span>
         </div>
 
-        {/* Confirm Password Field with toggle */}
         <div className="relative mb-6">
           <input
             type={showConfirmPassword ? "text" : "password"}
@@ -109,11 +107,11 @@ const Register = () => {
             value={formData.confirmPassword}
             onChange={handleChange}
             required
-            className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+            className="w-full p-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary text-text placeholder-muted"
           />
           <span
             onClick={() => setShowConfirmPassword((prev) => !prev)}
-            className="absolute right-3 top-3 cursor-pointer text-gray-500 hover:text-blue-600 transition"
+            className="absolute right-3 top-3 cursor-pointer text-muted hover:text-primary transition"
           >
             {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
           </span>
@@ -123,7 +121,7 @@ const Register = () => {
           name="role"
           value={formData.role}
           onChange={handleChange}
-          className="w-full p-3 mb-6 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+          className="w-full p-3 mb-6 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary text-text"
         >
           <option value="user">Register as User</option>
           <option value="company">Register as Company</option>
@@ -131,14 +129,14 @@ const Register = () => {
 
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition duration-300"
+          className="w-full bg-primary text-surface p-3 rounded-lg hover:bg-secondary transition duration-300 font-semibold"
         >
           Register
         </button>
 
-        <p className="mt-4 text-center text-sm">
+        <p className="mt-4 text-center text-sm text-muted">
           Already have an account?{" "}
-          <Link to="/login" className="text-blue-600 hover:underline">
+          <Link to="/login" className="text-primary hover:underline">
             Login
           </Link>
         </p>
