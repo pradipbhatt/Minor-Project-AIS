@@ -11,7 +11,7 @@ const Navbar = () => {
 
   if (token) {
     try {
-      const decoded = jwtDecode(token); // Fixed typo here
+      const decoded = jwtDecode(token);
       role = decoded?.role;
     } catch (err) {
       console.error("Invalid token");
@@ -27,8 +27,8 @@ const Navbar = () => {
     location.pathname === path ? "underline text-blue-600" : "";
 
   return (
-    <nav className="bg-white shadow-md px-6 py-4 flex justify-between items-center">
-      <div className="text-xl font-bold text-blue-600">InterviewSys</div>
+    <nav className="bg-primary shadow-md px-6 py-4 flex justify-between items-center">
+      <div className="text-xl font-bold text-blue-600">InterviewSystem</div>
 
       <div className="flex space-x-4">
         <Link
