@@ -1,56 +1,87 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
+import {
+  FaHome,
+  FaSignInAlt,
+  FaUserAlt,
+  FaUserTie,
+  FaSignOutAlt,
+} from "react-icons/fa";
 
 const Navbar = () => {
   const location = useLocation();
-  const navigate = useNavigate();
 
   const token = Cookies.get("token");
   let role = null;
+  let userName = null;
 
   if (token) {
     try {
       const decoded = jwtDecode(token);
       role = decoded?.role;
+      
+      userName = decoded?.name || decoded?.username;
+      console.log("Decoded token:", decoded);
+      console.log("Role:", role);
+      console.log("User Name:", userName);
+      
+      
     } catch (err) {
-      console.error("Invalid token");
+      console.error("Invalid token", err);
     }
   }
 
   const handleLogout = () => {
     Cookies.remove("token");
-    navigate("/");
+    window.location.reload(); // Refresh the page on logout
   };
 
   const isActive = (path) =>
-    location.pathname === path ? "underline text-text" : "";
+    location.pathname === path ? "text-primary underline" : "";
 
   return (
-    <nav className="bg-surface shadow-md px-6 py-4 flex justify-between items-center">
-      <div className="text-xl font-bold text-surface">InterviewSystem</div>
+    <nav className="bg-surface shadow-md px-6 py-4 flex justify-between items-center fixed w-full top-0 left-0 z-50">
+      {/* Brand Logo */}
+      <div className="text-xl font-bold text-primary flex items-center space-x-2">
+        <FaHome size={26} />
+        <span>InterviewSystem</span>
+      </div>
 
-      <div className="flex space-x-4">
+      {/* Centered Nav Links */}
+      <div className="flex items-center space-x-6">
         <Link
           to="/"
-          className={`text-muted hover:text-primary-light font-medium ${isActive("/")}`}
+          className={`text-muted hover:text-primary transition-all ${isActive("/")}`}
         >
-          Home
+          <FaHome size={20} />
         </Link>
+
+        {/* use the this /company-dashboard */}
+        {token && role === "company" && (
+          <Link
+            to="/company-dashboard"
+            className={`text-muted hover:text-primary transition-all ${isActive("/company-dashboard")}`}
+          >
+            <FaUserTie size={20} />
+          </Link>
+        )}
+
+        {/* Login and Register Links */}
 
         {!token && (
           <>
             <Link
               to="/login"
-              className={`text-muted hover:text-primary-light font-medium ${isActive("/login")}`}
+              className={`text-muted hover:text-primary transition-all ${isActive("/login")}`}
             >
-              Login
+              <FaSignInAlt size={20} />
             </Link>
             <Link
               to="/register"
-              className={`text-muted hover:text-primary-light font-medium ${isActive("/register")}`}
+              className={`text-muted hover:text-primary transition-all ${isActive("/register")}`}
             >
-              Register
+              <FaUserAlt size={20} />
             </Link>
           </>
         )}
@@ -58,30 +89,35 @@ const Navbar = () => {
         {token && role === "user" && (
           <Link
             to="/user-dashboard"
-            className={`text-muted hover:text-primary-light font-medium ${isActive("/user-dashboard")}`}
+            className={`text-muted hover:text-primary transition-all ${isActive("/user-dashboard")}`}
           >
-            User Dashboard
+            <FaUserAlt size={20} />
           </Link>
         )}
 
         {token && role === "admin" && (
           <Link
-            to="/admin-dashboard"
-            className={`text-muted hover:text-primary-light font-medium ${isActive("/admin-dashboard")}`}
+            to="/company-dashboard"
+            className={`text-muted hover:text-primary transition-all ${isActive("/company-dashboard")}`}
           >
-            Admin Dashboard
+            <FaUserTie size={20} />
           </Link>
         )}
+      </div>
 
-        {token && (
+      {/* Right Side User Info + Logout */}
+      {token && (
+        <div className="flex items-center space-x-4">
+          <span className="text-sm text-text font-medium">Hi, {userName}</span>
           <button
             onClick={handleLogout}
-            className="text-error font-medium hover:text-error-dark"
+            className="text-error hover:text-error-dark transition-all"
+            title="Logout"
           >
-            Logout
+            <FaSignOutAlt size={20} />
           </button>
-        )}
-      </div>
+        </div>
+      )}
     </nav>
   );
 };

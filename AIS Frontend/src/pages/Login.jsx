@@ -1,7 +1,10 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { loginUser, loginCompany } from "../api";
 import Cookies from "js-cookie";
+import fwu from "/fwu.jpg";
+
+import { FaEnvelope, FaLock, FaUserShield, FaUserTie } from "react-icons/fa";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -15,9 +18,12 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      console.log("Login attempt with data:", { email, password, role });
 
+    if (password !== confirmPassword) {
+      return setError("Passwords do not match!");
+    }
+
+    try {
       let response;
       if (role === "company") {
         response = await loginCompany({ email, password });
@@ -26,44 +32,54 @@ const Login = () => {
       }
 
       if (response?.token) {
-        console.log("Received token:", response.token);
         Cookies.set("token", response.token, { expires: 7, path: "/" });
-        console.log("Token stored in cookies:", response.token);
-
-        setTimeout(() => {
-          navigate(role === "company" ? "/company-dashboard" : "/user-dashboard");
-        }, 100);
+        navigate(role === "company" ? "/company-dashboard" : "/user-dashboard");
+        window.location.reload();
       } else {
-        setError("Login failed: Token is missing or invalid.");
+        setError("Login failed: Token missing or invalid.");
       }
     } catch (err) {
-      console.error("Error during login:", err);
-      setError(err.message || "An error occurred");
+      setError(err.message || "Login error occurred.");
     }
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-background">
-      <div className="bg-surface p-8 rounded-2xl shadow-2xl border border-border transition-transform transform hover:scale-105 duration-300 w-full max-w-md">
-        <h1 className="text-4xl font-extrabold mb-6 text-center text-primary animate-pulse">
+    <div
+      className="h-screen w-full bg-cover bg-center flex items-center justify-center"
+      style={{ backgroundImage: `url(${fwu})` }}
+    >
+      <div className="bg-white/10 backdrop-blur-xl p-8 rounded-2xl shadow-2xl border border-white/20 w-full max-w-md">
+        <h1 className="text-4xl font-extrabold mb-6 text-center text-surface drop-shadow-md">
           Login
         </h1>
-        {error && <p className="text-error mb-4 text-center">{error}</p>}
-        <form onSubmit={handleSubmit} className="space-y-4 bg-background p-4 rounded-lg">
-          <input
-            type="email"
-            placeholder="Email"
-            className="w-full p-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary text-text placeholder-muted"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
 
+        {error && (
+          <p className="text-error text-sm text-center mb-4 bg-red-100 px-3 py-2 rounded">
+            {error}
+          </p>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Email */}
           <div className="relative">
+            <FaEnvelope className="absolute left-3 top-3 text-secondary" />
+            <input
+              type="email"
+              placeholder="Email"
+              className="w-full pl-10 pr-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary bg-white/60 backdrop-blur text-text placeholder-muted"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+
+          {/* Password */}
+          <div className="relative">
+            <FaLock className="absolute left-3 top-3 text-secondary" />
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Password"
-              className="w-full p-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary text-text placeholder-muted"
+              className="w-full pl-10 pr-16 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary bg-white/60 backdrop-blur text-text placeholder-muted"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -76,11 +92,13 @@ const Login = () => {
             </span>
           </div>
 
+          {/* Confirm Password */}
           <div className="relative">
+            <FaLock className="absolute left-3 top-3 text-secondary" />
             <input
               type={showConfirmPassword ? "text" : "password"}
               placeholder="Confirm Password"
-              className="w-full p-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary text-text placeholder-muted"
+              className="w-full pl-10 pr-16 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary bg-white/60 backdrop-blur text-text placeholder-muted"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
@@ -93,22 +111,36 @@ const Login = () => {
             </span>
           </div>
 
-          <select
-            className="w-full p-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary text-text"
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-          >
-            <option value="user">Login as User</option>
-            <option value="company">Login as Company</option>
-          </select>
+          {/* Role Selection */}
+          <div className="relative">
+            <FaUserShield className="absolute left-3 top-3 text-secondary" />
+            <select
+              className="w-full pl-10 pr-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary bg-white/60 backdrop-blur text-text"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+            >
+              <option value="user">Login as User</option>
+              <option value="company">Login as Company</option>
+            </select>
+          </div>
 
+          {/* Submit Button */}
           <button
             type="submit"
-            className="bg-primary text-surface py-2 px-4 rounded-lg w-full hover:bg-secondary transition-all font-semibold"
+            className="bg-primary text-surface py-2 px-4 rounded-lg w-full hover:bg-secondary transition-all font-semibold shadow-lg"
           >
             Login
           </button>
         </form>
+
+        <div className="text-center mt-4">
+          <p className="text-muted">
+            Don&apos;t have an account?{" "}
+            <Link to="/register" className="text-secondary hover:underline font-medium">
+              Create one
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

@@ -23,6 +23,10 @@ const jobSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  expiresAt: {
+    type: Date,
+    required: true,
+  },
 });
 
 const Job = mongoose.model('Job', jobSchema);

@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { registerUser, registerCompany } from "../api";
 import Cookies from "js-cookie";
 import { Eye, EyeOff } from "lucide-react";
+import fwu from "/fwu.jpg";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -30,8 +31,6 @@ const Register = () => {
     }
 
     try {
-      console.log("Sending registration data:", formData);
-
       let response;
       if (formData.role === "company") {
         response = await registerCompany(formData);
@@ -40,26 +39,33 @@ const Register = () => {
       }
 
       if (response?.token) {
-        Cookies.set("token", response.token, { expires: 7, path: "" });
-        console.log("Token stored in cookies:", response.token);
+        Cookies.set("token", response.token, { expires: 7, path: "/" });
       }
 
       navigate("/login");
     } catch (err) {
-      console.error("Error during registration:", err);
       setError(err.message || "Registration failed");
     }
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-background transition-all duration-300 ease-in-out">
+    <div
+      className="h-screen w-full bg-cover bg-center flex items-center justify-center"
+      style={{ backgroundImage: `url(${fwu})` }}
+    >
       <form
         onSubmit={handleSubmit}
-        className="bg-surface shadow-xl p-8 rounded-2xl w-full max-w-md hover:shadow-2xl transition duration-300 ease-in-out border border-border"
+        className="bg-white/10 backdrop-blur-xl p-8 rounded-2xl shadow-2xl border border-white/20 w-full max-w-md"
       >
-        <h2 className="text-2xl font-bold mb-6 text-center text-primary">Register</h2>
+        <h2 className="text-4xl font-extrabold text-center mb-6 text-surface drop-shadow-md">
+          Register
+        </h2>
 
-        {error && <p className="text-error text-center mb-4">{error}</p>}
+        {error && (
+          <p className="text-error text-sm text-center mb-4 bg-red-100 px-3 py-2 rounded">
+            {error}
+          </p>
+        )}
 
         <input
           type="text"
@@ -68,7 +74,7 @@ const Register = () => {
           value={formData.name}
           onChange={handleChange}
           required
-          className="w-full p-3 mb-4 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary text-text placeholder-muted"
+          className="w-full p-3 mb-4 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary bg-white/60 backdrop-blur text-text placeholder-muted"
         />
 
         <input
@@ -78,7 +84,7 @@ const Register = () => {
           value={formData.email}
           onChange={handleChange}
           required
-          className="w-full p-3 mb-4 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary text-text placeholder-muted"
+          className="w-full p-3 mb-4 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary bg-white/60 backdrop-blur text-text placeholder-muted"
         />
 
         <div className="relative mb-4">
@@ -89,7 +95,7 @@ const Register = () => {
             value={formData.password}
             onChange={handleChange}
             required
-            className="w-full p-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary text-text placeholder-muted"
+            className="w-full p-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary bg-white/60 backdrop-blur text-text placeholder-muted"
           />
           <span
             onClick={() => setShowPassword((prev) => !prev)}
@@ -99,7 +105,7 @@ const Register = () => {
           </span>
         </div>
 
-        <div className="relative mb-6">
+        <div className="relative mb-4">
           <input
             type={showConfirmPassword ? "text" : "password"}
             name="confirmPassword"
@@ -107,7 +113,7 @@ const Register = () => {
             value={formData.confirmPassword}
             onChange={handleChange}
             required
-            className="w-full p-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary text-text placeholder-muted"
+            className="w-full p-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary bg-white/60 backdrop-blur text-text placeholder-muted"
           />
           <span
             onClick={() => setShowConfirmPassword((prev) => !prev)}
@@ -121,7 +127,7 @@ const Register = () => {
           name="role"
           value={formData.role}
           onChange={handleChange}
-          className="w-full p-3 mb-6 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary text-text"
+          className="w-full p-3 mb-6 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary bg-white/60 backdrop-blur text-text"
         >
           <option value="user">Register as User</option>
           <option value="company">Register as Company</option>
@@ -129,14 +135,14 @@ const Register = () => {
 
         <button
           type="submit"
-          className="w-full bg-primary text-surface p-3 rounded-lg hover:bg-secondary transition duration-300 font-semibold"
+          className="w-full bg-primary text-surface p-3 rounded-lg hover:bg-secondary transition duration-300 font-semibold shadow-lg"
         >
           Register
         </button>
 
         <p className="mt-4 text-center text-sm text-muted">
           Already have an account?{" "}
-          <Link to="/login" className="text-primary hover:underline">
+          <Link to="/login" className="text-secondary hover:underline font-medium">
             Login
           </Link>
         </p>

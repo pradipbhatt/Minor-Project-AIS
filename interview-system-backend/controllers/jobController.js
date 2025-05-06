@@ -5,46 +5,49 @@ const jwt = require('jsonwebtoken');   // Using require for importing jsonwebtok
 // Create a new job
 const createJob = async (req, res) => {
   try {
-    // Get token from cookies
     const token = req.cookies.token;
     if (!token) {
       return res.status(401).json({ message: 'No token provided, authorization denied.' });
     }
 
-    // Verify the token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    if (!decoded) {
-      return res.status(401).json({ message: 'Token is not valid.' });
+    if (!decoded || decoded.role !== 'company') {
+      return res.status(401).json({ message: 'Unauthorized. Only companies can create jobs.' });
     }
 
-    // Now you have access to the company ID from the decoded token
-    const companyId = decoded.id;  // Assuming `id` is stored in the JWT payload for the company
+    const companyId = decoded.id;
 
-    // Destructure job data from the request body
-    const { title, description, location, salary } = req.body;
+    const { title, description, location, salary, expiresInDays } = req.body;
 
-    // Create the new job with the company info from the decoded token
+    if (!expiresInDays || isNaN(expiresInDays)) {
+      return res.status(400).json({ message: 'Please provide a valid number of days for expiration.' });
+    }
+
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + parseInt(expiresInDays));
+
     const newJob = new Job({
       title,
       description,
       location,
       salary,
-      company: companyId,  // Use companyId from the token
-      createdBy: companyId,  // You can also associate the job with the creator if needed
+      company: companyId,
+      createdBy: companyId,
+      expiresAt,
     });
 
-    // Save the new job
     await newJob.save();
 
-    // Send a response with the job details
-    res.status(201).json({ message: 'Job created successfully', job: newJob });
+    res.status(201).json({
+      message: 'Job created successfully',
+      job: newJob,
+    });
 
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Failed to create job', error: error.message });
   }
 };
-
 
 // Get all jobs
 const getJobs = async (req, res) => {

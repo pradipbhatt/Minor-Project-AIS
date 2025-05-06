@@ -162,4 +162,37 @@ export const getInterviewQuestions = async (jobId) => {
   return await res.json();
 };
 
+// Fetch company details by companyId
+export const getCompanyDetails = async (companyId) => {
+  const token = Cookies.get("token"); // Get token from cookies
+  if (!token) {
+    console.error("No authentication token found");
+    throw new Error("No authentication token found");
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/auth/company/${companyId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`, // Pass the token in the Authorization header
+      },
+    });
+
+    if (!response.ok) {
+      const data = await response.json();
+      console.error("Failed to fetch company details:", data);
+      throw new Error(data.message || "Failed to fetch company details");
+    }
+
+    const data = await response.json();
+    console.log("Company details fetched successfully:", data);
+    return data;
+
+  } catch (error) {
+    console.error("Error occurred while fetching company details:", error);
+  }
+};
+
+
 export { API_URL };
